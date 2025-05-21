@@ -3,6 +3,12 @@ import TextField from "@mui/material/TextField";
 import List from '@components/list';
 
 const Home = () => {
+    const [inputText, setInputText] = useState("");
+    let inputHandler = (e) => {
+        //convert input text to lower case
+        var lowerCase = e.target.value.toLowerCase();
+        setInputText(lowerCase);
+    };
 
     return (
         <>
@@ -11,12 +17,35 @@ const Home = () => {
                 <div className="search">
                     <TextField
                         id="outlined-basic"
+                        onChange={inputHandler}
                         variant="outlined"
                         fullWidth
                         label="Search"
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&:hover fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderColor: 'white',
+                                },
+                            },
+                            '& .MuiInputLabel-root': {
+                                color: 'white',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: 'white',
+                            },
+                            '& .MuiInputBase-input': {
+                                color: 'white',
+                            }
+                        }}
                     />
                 </div>
-                <List />
+                <List input={inputText} />
             </div>
         </>
     );
