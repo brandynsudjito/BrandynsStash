@@ -1,42 +1,52 @@
 [
   {
     "id": 1,
-    "text": "Devpulse"
+    "name": "Optimus Prime",
+    "series": ["Generation 1", "G1"]
   },
   {
     "id": 2,
-    "text": "Linklinks"
+    "name": "Megatron",
+    "series": "Beast Wars"
   },
   {
     "id": 3,
-    "text": "Centizu"
+    "name": "Starscream",
+    "series": "Armada"
   },
   {
     "id": 4,
-    "text": "Dynabox"
+    "name": "Soundwave",
+    "series": "Prime"
   },
   {
     "id": 5,
-    "text": "Avaveo"
+    "name": "Jazz",
+    "series": "Generation 1"
   },
   {
     "id": 6,
-    "text": "Demivee"
+    "name": "Bumblebee",
+    "series": "Cyberverse"
   },
   {
     "id": 7,
-    "text": "Jayo"
+    "name": "Skywarp",
+    "series": "Animated"
   },
   {
     "id": 8,
-    "text": "Blognation"
+    "name": "Grimlock",
+    "series": "Animated"
   },
   {
     "id": 9,
-    "text": "Podcat"
+    "name": "Thundercracker",
+    "series": "Animated"
   },
   {
     "id": 10,
-    "text": "Layo"
+    "name": "Cliffjumper",
+    "series": "Prime"
   }
 ]
