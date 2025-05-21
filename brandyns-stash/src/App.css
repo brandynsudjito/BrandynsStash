@@ -40,3 +40,26 @@
 .read-the-docs {
   color: #888;
 }
+
+.main {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  align-items: center;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+h1 {
+  margin: 10px;
+  font-size: 40px;
+}
+
+.search {
+  width: 30%;
+  border-color: white;
+}
+
+ul li {
+  font-size: 20px;
+} 
