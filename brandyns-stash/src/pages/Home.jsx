@@ -11,44 +11,46 @@ const Home = () => {
     };
 
     return (
-        <>
-            <div className="home">
-                <h1>Brandyn's Stash</h1>
-                <div className="search">
-                    <TextField
-                        id="outlined-basic"
-                        onChange={inputHandler}
-                        variant="outlined"
-                        fullWidth
-                        label="Search"
-                        sx={{
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: 'white',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: 'white',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: 'white',
-                                },
+        <div className="home">
+            <h1>Brandyn's Stash</h1>
+            <div className="search-container">
+                <TextField
+                    id="outlined-basic"
+                    onChange={inputHandler}
+                    variant="outlined"
+                    label="Search"
+                    // Remove fullWidth, add specific width
+                    sx={{
+                        width: '100%', // Full width of container
+                        maxWidth: '600px', // Maximum width
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: 'white',
                             },
-                            '& .MuiInputLabel-root': {
-                                color: 'white',
+                            '&:hover fieldset': {
+                                borderColor: 'white',
                             },
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: 'white',
+                            '&.Mui-focused fieldset': {
+                                borderColor: 'white',
                             },
-                            '& .MuiInputBase-input': {
-                                color: 'white',
-                            }
-                        }}
-                    />
-                </div>
-                <List input={inputText} />
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: 'white',
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: 'white',
+                        },
+                        '& .MuiInputBase-input': {
+                            color: 'white',
+                        }
+                    }}
+                />
             </div>
-        </>
+            <List input={inputText} />
+        </div>
     );
 };
+
+
 
 export default Home;

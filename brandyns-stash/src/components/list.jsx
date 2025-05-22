@@ -1,34 +1,44 @@
 import { React, useState } from 'react'
 import data from "./ListData.json"
 
-function List(props) {
-    //create a new array by filtering the original array
+function List({ input }) {
     const filteredData = data.filter((el) => {
-        //if no input the return the original
-        if (props.input === '') {
-            return el;
+        if (input === '') {
+            return true;
         }
-        const inputLower = props.input.toLowerCase();
-            // Convert series to array if it's not already an array
-            const seriesArray = Array.isArray(el.series) 
+
+        const inputLower = input.toLowerCase();
+
+        const seriesArray = Array.isArray(el.series) 
             ? el.series 
             : [el.series];
 
-        //return the item which contains the user input
         return (
             el.name.toLowerCase().includes(inputLower) || 
             seriesArray.some(series => 
                 series.toLowerCase().includes(inputLower)
             )
         );
-    })
+    });
+
     return (
-        <ul>
+        <div className="character-grid">
             {filteredData.map((item) => (
-                <li key={item.id}>{item.name}</li>
+                <div key={item.id} className="character-grid-item">
+                    <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        className="character-image"
+                    />
+                    <p className="character-name">{item.name}</p>
+                </div>
             ))}
-        </ul>
+        </div>
     )
 }
+
+
+
+
 
 export default List

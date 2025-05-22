@@ -58,3 +58,72 @@ h1 {
 ul li {
   font-size: 20px;
 } 
+
+.home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.search-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    width: 100%;
+    max-width: 1600px; 
+}
+
+.character-grid-item {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 400px; 
+}
+
+.character-image {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+}
+
+.character-name {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    height: 50px;
+}
+
+@media (max-width: 1600px) {
+    .character-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1200px) {
+    .character-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .character-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .character-grid {
+        grid-template-columns: 1fr;
+    }
+}
