@@ -97,11 +97,24 @@ ul li {
     object-fit: cover;
 }
 
-.character-name {
+.character-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 10px;
-    text-align: center;
+    gap: 2px; /* Reduce the gap */
+}
+
+.character-name {
     font-weight: bold;
-    height: 50px;
+    font-size: 1.2em;
+    margin-bottom: 0; /* Remove margin */
+}
+
+.character-series {
+    color: #a1a1a1;
+    font-size: 0.8em;
+    margin-top: 0; /* Remove top margin */
 }
 
 @media (max-width: 1600px) {
@@ -126,4 +139,33 @@ ul li {
     .character-grid {
         grid-template-columns: 1fr;
     }
+}
+
+
+.sort-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+}
+
+.sort-controls select, 
+.sort-controls button {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sort-controls select:hover, 
+.sort-controls button:hover {
+    background-color: #e9ecef;
+}
+
+.sort-controls select:focus, 
+.sort-controls button:focus {
+    outline: none;
+    border-color: #007bff;
 }
