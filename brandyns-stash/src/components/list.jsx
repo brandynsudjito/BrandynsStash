@@ -1,8 +1,10 @@
 import { React, useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom';
 import data from "./ListData.json"
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
 function List({ input }) {
+    const navigate = useNavigate();
     const [sortConfig, setSortConfig] = useState({
         key: null,
         direction: 'ascending'
@@ -173,7 +175,11 @@ function List({ input }) {
             {/* Grid Display */}
             <div className="character-grid">
                 {processedData.map((item) => (
-                    <div key={item.id} className="character-grid-item">
+                    <div 
+                        key={item.id} 
+                        className="character-grid-item"
+                        onClick={() => navigate(`/item/${item.id}`)}
+                        style={{ cursor: 'pointer' }}>
                         <img 
                             src={item.image} 
                             alt={item.name} 

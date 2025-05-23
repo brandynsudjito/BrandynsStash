@@ -3,60 +3,60 @@
     "id": 1,
     "name": "Optimus Prime",
     "series": ["Generation 1", "G1"],
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   },
   {
     "id": 2,
     "name": "Megatron",
     "series": "Beast Wars",
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   },
   {
     "id": 3,
     "name": "Starscream",
     "series": "Armada",
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   },
   {
     "id": 4,
     "name": "Soundwave",
     "series": "Prime",
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   },
   {
     "id": 5,
     "name": "Jazz",
     "series": "Generation 1",
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   },
   {
     "id": 6,
     "name": "Bumblebee",
     "series": "Cyberverse",
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   },
   {
     "id": 7,
     "name": "Skywarp",
     "series": "Animated",
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   },
   {
     "id": 8,
     "name": "Grimlock",
     "series": "Animated",
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   },
   {
     "id": 9,
     "name": "Thundercracker",
     "series": "Animated",
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   },
   {
     "id": 10,
     "name": "Cliffjumper",
     "series": "Prime",
-    "image": "src/assets/react.svg"
+    "image": "/images/react.svg"
   }
 ]
