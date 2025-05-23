@@ -1,32 +1,27 @@
 import { React, useState, useMemo } from 'react'
 import data from "./ListData.json"
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
 function List({ input }) {
-    // Sorting configuration state
     const [sortConfig, setSortConfig] = useState({
         key: null,
         direction: 'ascending'
     });
 
-    // Sorting function with flexibility for future expansion
     const getSortedValue = (item, key) => {
         switch(key) {
             case 'name':
                 return item.name;
             case 'series':
-                // Handle both array and string series, taking first value
                 return Array.isArray(item.series) 
                     ? item.series[0] 
                     : item.series;
-            // Easy to add more cases in the future
             default:
                 return item[key];
         }
     };
 
-    // Sorting and filtering logic
     const processedData = useMemo(() => {
-        // First, filter the data
         const filteredData = data.filter((el) => {
             if (input === '') {
                 return true;
@@ -46,13 +41,11 @@ function List({ input }) {
             );
         });
 
-        // Then sort if needed
         if (sortConfig.key) {
             return [...filteredData].sort((a, b) => {
                 const valueA = getSortedValue(a, sortConfig.key);
                 const valueB = getSortedValue(b, sortConfig.key);
 
-                // Case-insensitive string comparison
                 if (typeof valueA === 'string' && typeof valueB === 'string') {
                     const comparison = valueA.localeCompare(valueB);
                     return sortConfig.direction === 'ascending' 
@@ -60,7 +53,6 @@ function List({ input }) {
                         : -comparison;
                 }
 
-                // Fallback for other types
                 if (valueA < valueB) {
                     return sortConfig.direction === 'ascending' ? -1 : 1;
                 }
@@ -74,7 +66,6 @@ function List({ input }) {
         return filteredData;
     }, [input, sortConfig]);
 
-    // Sort request handler
     const requestSort = (key) => {
         let direction = 'ascending';
         if (
@@ -86,28 +77,60 @@ function List({ input }) {
         setSortConfig({ key, direction });
     };
 
-    // Sorting options (easily expandable)
     const sortOptions = [
         { key: 'name', label: 'Name' },
         { key: 'series', label: 'Series' }
-        // Easy to add more options in the future
     ];
 
     return (
         <div>
             {/* Sorting Controls */}
             <div className="sort-controls">
-                <select 
-                    onChange={(e) => requestSort(e.target.value)}
-                    value={sortConfig.key || ''}
+                <FormControl 
+                    variant="outlined" 
+                    sx={{ 
+                        minWidth: 200,
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: 'white',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: 'white',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: 'white',
+                            },
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: 'white',
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: 'white',
+                        },
+                        '& .MuiSelect-icon': {
+                            color: 'white',
+                        },
+                        '& .MuiSelect-select': {
+                            color: 'white',
+                        }
+                    }}
                 >
-                    <option value="">Sort By</option>
-                    {sortOptions.map((option) => (
-                        <option key={option.key} value={option.key}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
+                    <InputLabel>Sort By</InputLabel>
+                    <Select
+                        value={sortConfig.key || ''}
+                        onChange={(e) => requestSort(e.target.value)}
+                        label="Sort By"
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
+                        </MenuItem>
+                        {sortOptions.map((option) => (
+                            <MenuItem key={option.key} value={option.key}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
 
                 {sortConfig.key && (
                     <button 
@@ -117,6 +140,14 @@ function List({ input }) {
                                 ? 'descending' 
                                 : 'ascending' 
                         })}
+                        style={{
+                            backgroundColor: 'transparent',
+                            border: '1px solid white',
+                            color: 'white',
+                            padding: '10px 16px',
+                            cursor: 'pointer',
+                            borderRadius: '4px'
+                        }}
                     >
                         {sortConfig.direction === 'ascending' ? '▲' : '▼'}
                     </button>
@@ -125,6 +156,14 @@ function List({ input }) {
                 {sortConfig.key && (
                     <button 
                         onClick={() => setSortConfig({ key: null, direction: 'ascending' })}
+                        style={{
+                            backgroundColor: 'transparent',
+                            border: '1px solid white',
+                            color: 'white',
+                            padding: '10px 16px',
+                            cursor: 'pointer',
+                            borderRadius: '4px'
+                        }}
                     >
                         Reset
                     </button>
@@ -154,8 +193,6 @@ function List({ input }) {
         </div>
     )
 }
-
-
 
 
 
