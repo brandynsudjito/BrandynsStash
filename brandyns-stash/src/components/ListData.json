@@ -3,7 +3,8 @@
     "id": 1,
     "name": "Optimus Prime",
     "series": ["Generation 1", "G1"],
-    "image": "/images/react.svg"
+    "image": "/images/react.svg",
+    "description": "Generation 1 Optimus Prime figure"
   },
   {
     "id": 2,

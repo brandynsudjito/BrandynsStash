@@ -43,7 +43,7 @@ const ItemDetail = () => {
 
                     {item.description && (
                         <div className="detail-section">
-                            <h2>Description</h2>
+                            {/* <h2>Description</h2> */}
                             <p>{item.description}</p>
                         </div>
                     )}
