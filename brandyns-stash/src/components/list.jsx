@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import data from "./ListData.json"
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
-function List({ input, searchType = 'all' }) {
+function List({ input, searchType = 'all', sortConfig }) {
     const navigate = useNavigate();
-    const [sortConfig, setSortConfig] = useState({
-        key: null,
-        direction: 'ascending'
-    });
+    // const [sortConfig, setSortConfig] = useState({
+    //     key: null,
+    //     direction: 'ascending'
+    // });
 
     const getSortedValue = (item, key) => {
         switch(key) {
@@ -96,92 +96,6 @@ function List({ input, searchType = 'all' }) {
 
     return (
         <div>
-            {/* Sorting Controls */}
-            <div className="sort-controls">
-                <FormControl 
-                    variant="outlined" 
-                    sx={{ 
-                        minWidth: 200,
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&:hover fieldset': {
-                                borderColor: 'white',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: 'white',
-                            },
-                        },
-                        '& .MuiInputLabel-root': {
-                            color: 'white',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: 'white',
-                        },
-                        '& .MuiSelect-icon': {
-                            color: 'white',
-                        },
-                        '& .MuiSelect-select': {
-                            color: 'white',
-                        }
-                    }}
-                >
-                    <InputLabel>Sort By</InputLabel>
-                    <Select
-                        value={sortConfig.key || ''}
-                        onChange={(e) => requestSort(e.target.value)}
-                        label="Sort By"
-                    >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        {sortOptions.map((option) => (
-                            <MenuItem key={option.key} value={option.key}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                {sortConfig.key && (
-                    <button 
-                        onClick={() => setSortConfig({ 
-                            key: sortConfig.key, 
-                            direction: sortConfig.direction === 'ascending' 
-                                ? 'descending' 
-                                : 'ascending' 
-                        })}
-                        style={{
-                            backgroundColor: 'transparent',
-                            border: '1px solid white',
-                            color: 'white',
-                            padding: '10px 16px',
-                            cursor: 'pointer',
-                            borderRadius: '4px'
-                        }}
-                    >
-                        {sortConfig.direction === 'ascending' ? '▲' : '▼'}
-                    </button>
-                )}
-
-                {sortConfig.key && (
-                    <button 
-                        onClick={() => setSortConfig({ key: null, direction: 'ascending' })}
-                        style={{
-                            backgroundColor: 'transparent',
-                            border: '1px solid white',
-                            color: 'white',
-                            padding: '10px 16px',
-                            cursor: 'pointer',
-                            borderRadius: '4px'
-                        }}
-                    >
-                        Reset
-                    </button>
-                )}
-            </div>
-
             {/* Grid Display */}
             <div className="character-grid">
                 {processedData.map((item) => (

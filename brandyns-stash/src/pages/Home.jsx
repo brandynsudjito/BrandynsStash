@@ -9,7 +9,23 @@ const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [inputText, setInputText] = useState(searchParams.get('search') || "");
     const [searchType, setSearchType] = useState(searchParams.get('type') || "all"); // Default to searching all fields
-    
+    const [sortConfig, setSortConfig] = useState({
+        key: "",
+        direction: 'ascending'
+    });
+
+    const requestSort = (key) => {
+        let direction = 'ascending';
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const resetSort = () => {
+        setSortConfig({ key: '', direction: 'ascending' });
+    };
+
     let inputHandler = (e) => {
         var lowerCase = e.target.value.toLowerCase();
         setInputText(lowerCase);
@@ -46,99 +62,168 @@ const Home = () => {
 
     return (
         <div className="home">
-            <h1>Brandyn's Stash</h1>
-            <div className="search-container" style={{ display: 'flex', gap: '10px', justifyContent: 'center', alignItems: 'flex-start' }}>
-                <TextField
-                    id="outlined-basic"
-                    onChange={inputHandler}
-                    value={inputText}
-                    variant="outlined"
-                    label="Search"
-                    InputLabel={{ shrink: true }}
-                    slotProps={{
-                        input:{
-                            endAdornment: inputText && (
-                                <IconButton
-                                    aria-label="clear search"
-                                    onClick={handleClear}
-                                    edge="end"
-                                    sx={{ 
-                                        color: 'white',
-                                        visibility: inputText ? 'visible' : 'hidden' 
-                                    }}
-                                >
-                                    <ClearIcon/>
-                                </IconButton>
-                            )
-                        }
-                    }}
-                    sx={{
-                        width: '100%', 
-                        maxWidth: '450px',
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: 'white',
+            <div className="header-container">
+                <h1>Brandyn's Stash</h1>
+                <div className="search-container" style={{ display: 'flex', gap: '10px', justifyContent: 'center', alignItems: 'flex-start' }}>
+                    <TextField
+                        id="outlined-basic"
+                        onChange={inputHandler}
+                        value={inputText}
+                        variant="outlined"
+                        label="Search"
+                        InputLabel={{ shrink: true }}
+                        slotProps={{
+                            input:{
+                                endAdornment: inputText && (
+                                    <IconButton
+                                        aria-label="clear search"
+                                        onClick={handleClear}
+                                        edge="end"
+                                        sx={{ 
+                                            color: 'white',
+                                            visibility: inputText ? 'visible' : 'hidden' 
+                                        }}
+                                    >
+                                        <ClearIcon/>
+                                    </IconButton>
+                                )
+                            }
+                        }}
+                        sx={{
+                            width: '100%', 
+                            maxWidth: '450px',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&:hover fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderColor: 'white',
+                                },
                             },
-                            '&:hover fieldset': {
-                                borderColor: 'white',
+                            '& .MuiInputLabel-root': {
+                                color: 'white',
                             },
-                            '&.Mui-focused fieldset': {
-                                borderColor: 'white',
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: 'white',
                             },
-                        },
-                        '& .MuiInputLabel-root': {
-                            color: 'white',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: 'white',
-                        },
-                        '& .MuiInputBase-input': {
-                            color: 'white',
-                        }
-                    }}
-                />
-                <FormControl
-                    variant="outlined"
-                    sx={{
-                        minWidth: 150,
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: 'white',
+                            '& .MuiInputBase-input': {
+                                color: 'white',
+                            }
+                        }}
+                    />
+                    <FormControl
+                        variant="outlined"
+                        sx={{
+                            minWidth: 150,
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&:hover fieldset': {
+                                    borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderColor: 'white',
+                                },
                             },
-                            '&:hover fieldset': {
-                                borderColor: 'white',
+                            '& .MuiInputLabel-root': {
+                                color: 'white',
                             },
-                            '&.Mui-focused fieldset': {
-                                borderColor: 'white',
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: 'white',
                             },
-                        },
-                        '& .MuiInputLabel-root': {
-                            color: 'white',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: 'white',
-                        },
-                        '& .MuiSelect-icon': {
-                            color: 'white',
-                        },
-                        '& .MuiSelect-select': {
-                            color: 'white',
-                        }
-                    }}
-                >
-                    <InputLabel>Search In</InputLabel>
-                    <Select
-                        value={searchType}
-                        onChange={handleSearchTypeChange}
-                        label="Search By"
+                            '& .MuiSelect-icon': {
+                                color: 'white',
+                            },
+                            '& .MuiSelect-select': {
+                                color: 'white',
+                            }
+                        }}
                     >
-                        <MenuItem value="all">All</MenuItem>
-                        <MenuItem value="name">Name</MenuItem>
-                        <MenuItem value="series">Series</MenuItem>
-                    </Select>
-                </FormControl>
+                        <InputLabel>Search In</InputLabel>
+                        <Select
+                            value={searchType}
+                            onChange={handleSearchTypeChange}
+                            label="Search By"
+                        >
+                            <MenuItem value="all">All</MenuItem>
+                            <MenuItem value="name">Name</MenuItem>
+                            <MenuItem value="series">Series</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl
+                        variant="outlined"
+                        sx={{
+                            minWidth: 150,
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: 'white' },
+                                '&:hover fieldset': { borderColor: 'white' },
+                                '&.Mui-focused fieldset': { borderColor: 'white' },
+                            },
+                            '& .MuiInputLabel-root': { color: 'white' },
+                            '& .MuiInputLabel-root.Mui-focused': { color: 'white' },
+                            '& .MuiSelect-icon': { color: 'white' },
+                            '& .MuiSelect-select': { color: 'white' }
+                        }}
+                    >
+                        <InputLabel>Sort By</InputLabel>
+                        <Select
+                            value={sortConfig.key}
+                            onChange={(e) => requestSort(e.target.value)}
+                            label="Sort By"
+                        >
+                            <MenuItem value=""><em>None</em></MenuItem>
+                            <MenuItem value="name">Name</MenuItem>
+                            <MenuItem value="series">Series</MenuItem>
+                        </Select>
+                    </FormControl>
+
+                    {sortConfig.key && (
+                        <>
+                            <button
+                                onClick={() =>
+                                    setSortConfig({
+                                        key: sortConfig.key,
+                                        direction: sortConfig.direction === 'ascending'
+                                            ? 'descending'
+                                            : 'ascending'
+                                    })
+                                }
+                                style={{
+                                    backgroundColor: 'transparent',
+                                    border: '1px solid white',
+                                    color: 'white',
+                                    padding: '10px 16px',
+                                    cursor: 'pointer',
+                                    borderRadius: '4px'
+                                }}
+                            >
+                                {sortConfig.direction === 'ascending' ? '▲' : '▼'}
+                            </button>
+                            <button
+                                onClick={resetSort}
+                                style={{
+                                    backgroundColor: 'transparent',
+                                    border: '1px solid white',
+                                    color: 'white',
+                                    padding: '10px 16px',
+                                    cursor: 'pointer',
+                                    borderRadius: '4px'
+                                }}
+                            >
+                                Reset
+                            </button>
+                        </>
+                    )}
+
+                </div>
             </div>
-            <List input={inputText} searchType={searchType} />
+            <div className="content-container">
+                <List input={inputText} searchType={searchType} sortConfig={sortConfig}/>
+            </div>
         </div>
     );
 };
