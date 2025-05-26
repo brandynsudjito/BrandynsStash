@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import data from "./ListData.json"
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
-function List({ input }) {
+function List({ input, searchType = 'all' }) {
     const navigate = useNavigate();
     const [sortConfig, setSortConfig] = useState({
         key: null,
@@ -35,12 +35,22 @@ function List({ input }) {
                 ? el.series 
                 : [el.series];
 
-            return (
-                el.name.toLowerCase().includes(inputLower) || 
-                seriesArray.some(series => 
-                    series.toLowerCase().includes(inputLower)
-                )
-            );
+            switch(searchType){
+                case 'name':
+                    return el.name.toLowerCase().includes(inputLower);
+                case 'series':
+                    return seriesArray.some(series => 
+                        series.toLowerCase().includes(inputLower)
+                    );
+                case 'all':
+                default:
+                    return (
+                        el.name.toLowerCase().includes(inputLower) || 
+                        seriesArray.some(series => 
+                            series.toLowerCase().includes(inputLower)
+                        )
+                    );
+            }
         });
 
         if (sortConfig.key) {
@@ -66,7 +76,7 @@ function List({ input }) {
         }
 
         return filteredData;
-    }, [input, sortConfig]);
+    }, [input, searchType, sortConfig]);
 
     const requestSort = (key) => {
         let direction = 'ascending';
