@@ -1,18 +1,44 @@
+// Home.jsx
 import { React, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import TextField from "@mui/material/TextField";
-import { Select, MenuItem, FormControl, InputLabel, IconButton } from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear'; // Make sure to import this
+import { Select, MenuItem, FormControl, InputLabel, IconButton, CircularProgress } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 import List from '@components/list';
+import { getItems } from '../firebase/itemService';
 
 const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [inputText, setInputText] = useState(searchParams.get('search') || "");
-    const [searchType, setSearchType] = useState(searchParams.get('type') || "all"); // Default to searching all fields
+    const [searchType, setSearchType] = useState(searchParams.get('type') || "all");
     const [sortConfig, setSortConfig] = useState({
-        key: "",
-        direction: 'ascending'
+        key: searchParams.get('sortKey') || "",
+        direction: searchParams.get('sortDir') || 'ascending'
     });
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch items when search or sort parameters change
+    useEffect(() => {
+        const fetchItems = async () => {
+            setLoading(true);
+            try {
+                const fetchedItems = await getItems(
+                    inputText, 
+                    searchType, 
+                    sortConfig.key, 
+                    sortConfig.direction
+                );
+                setItems(fetchedItems);
+            } catch (error) {
+                console.error("Error fetching items:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchItems();
+    }, [inputText, searchType, sortConfig]);
 
     const requestSort = (key) => {
         let direction = 'ascending';
@@ -20,43 +46,70 @@ const Home = () => {
             direction = 'descending';
         }
         setSortConfig({ key, direction });
+        setSearchParams({ 
+            search: inputText, 
+            type: searchType,
+            sortKey: key,
+            sortDir: direction
+        });
     };
 
     const resetSort = () => {
         setSortConfig({ key: '', direction: 'ascending' });
+        setSearchParams({ 
+            search: inputText, 
+            type: searchType,
+            sortKey: '',
+            sortDir: 'ascending'
+        });
     };
 
     let inputHandler = (e) => {
-        var lowerCase = e.target.value.toLowerCase();
+        const lowerCase = e.target.value.toLowerCase();
         setInputText(lowerCase);
         setSearchParams({ 
             search: lowerCase, 
-            type: searchType 
+            type: searchType,
+            sortKey: sortConfig.key,
+            sortDir: sortConfig.direction
         });
     };
 
     const handleSearchTypeChange = (e) => {
         const newSearchType = e.target.value;
-        setSearchType(e.target.value);
+        setSearchType(newSearchType);
         setSearchParams({ 
             search: inputText, 
-            type: newSearchType 
+            type: newSearchType,
+            sortKey: sortConfig.key,
+            sortDir: sortConfig.direction
         });
     };
 
-    //update te TextField value with the URL parameter
+    // Update from URL parameters
     useEffect(() => {
         const searchParam = searchParams.get('search');
         const typeParam = searchParams.get('type');
+        const sortKeyParam = searchParams.get('sortKey');
+        const sortDirParam = searchParams.get('sortDir');
+        
         if (searchParam) setInputText(searchParam);
-        if (typeParam) setSearchType(typeParam); 
+        if (typeParam) setSearchType(typeParam);
+        if (sortKeyParam || sortDirParam) {
+            setSortConfig({
+                key: sortKeyParam || '',
+                direction: sortDirParam || 'ascending'
+            });
+        }
     }, [searchParams]);
 
     const handleClear = () => {
         setInputText("");
         setSearchParams({
             search: "",
-            type: searchType
+            type: searchType,
+            sortKey: sortConfig.key,
+            sortDir: sortConfig.direction
         });
     };
 
@@ -114,6 +167,7 @@ const Home = () => {
                             }
                         }}
                     />
+                    {/* Search Type Dropdown */}
                     <FormControl
                         variant="outlined"
                         sx={{
@@ -147,13 +201,15 @@ const Home = () => {
                         <Select
                             value={searchType}
                             onChange={handleSearchTypeChange}
-                            label="Search By"
+                            label="Search In"
                         >
                             <MenuItem value="all">All</MenuItem>
                             <MenuItem value="name">Name</MenuItem>
                             <MenuItem value="series">Series</MenuItem>
                         </Select>
                     </FormControl>
+                    
+                    {/* Sort Dropdown */}
                     <FormControl
                         variant="outlined"
                         sx={{
@@ -185,12 +241,7 @@ const Home = () => {
                         <>
                             <button
                                 onClick={() =>
-                                    setSortConfig({
-                                        key: sortConfig.key,
-                                        direction: sortConfig.direction === 'ascending'
-                                            ? 'descending'
-                                            : 'ascending'
-                                    })
+                                    requestSort(sortConfig.key)
                                 }
                                 style={{
                                     backgroundColor: 'transparent',
@@ -218,11 +269,20 @@ const Home = () => {
                             </button>
                         </>
                     )}
-
                 </div>
             </div>
             <div className="content-container">
-                <List input={inputText} searchType={searchType} sortConfig={sortConfig}/>
+                {loading ? (
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        padding: '50px'
+                    }}>
+                        <CircularProgress sx={{ color: 'white' }} />
+                    </div>
+                ) : (
+                    <List items={items} />
+                )}
             </div>
         </div>
     );

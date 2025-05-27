@@ -8,9 +8,10 @@ const firebaseConfig = {
     projectId: "brandynsstash",
     storageBucket: "brandynsstash.firebasestorage.app",
     messagingSenderId: "471553913739",
-    appId: "1:471553913739:web:5a993b50243b8118e8f58e",
-    measurementId: "G-KGBSN63169"
+    appId: "1:471553913739:web:17756e2a98ab6e93e8f58e",
+    measurementId: "G-J6Q703HVWE"
 };
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
