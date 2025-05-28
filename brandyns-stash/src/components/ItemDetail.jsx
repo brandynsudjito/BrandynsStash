@@ -101,11 +101,9 @@ const ItemDetail = () => {
                     <h1>{item.name}</h1>
                     
                     <div className="detail-section">
-                        <h2>Series</h2>
+                        <h2></h2>
                         <p>
-                            {Array.isArray(item.series) 
-                                ? item.series.join(', ') 
-                                : item.series}
+                            {item.seriesFirst}
                         </p>
                     </div>
 

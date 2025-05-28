@@ -26,19 +26,17 @@ export const getItems = async (searchTerm = "", searchType = "all", sortKey = ""
       const searchTermLower = searchTerm.toLowerCase();
       
       if (searchType === "name") {
-        // Search by name
-        q = query(
-          itemsCollection,
-          where("nameLower", ">=", searchTermLower),
-          where("nameLower", "<=", searchTermLower + "\uf8ff")
-        );
-        
-        // Execute the query
-        const querySnapshot = await getDocs(q);
-        items = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        // Use contains instead of range queries for name search
+        // Get all documents and filter client-side
+        const querySnapshot = await getDocs(itemsCollection);
+        items = querySnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          .filter(item => 
+            item.name && item.name.toLowerCase().includes(searchTermLower)
+          );
       } 
       else if (searchType === "series") {
         console.log("Searching by series:", searchTermLower);
