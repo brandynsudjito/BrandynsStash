@@ -278,3 +278,13 @@ ul li {
   overflow-y: auto;
   padding: 16px;
 }
+
+#outlined-basic{
+  width:450px;
+}
+
+@media (max-width: 600px) {
+  #outlined-basic {
+    width: 100%; /* Full width on smaller screens */
+  }
+}
