@@ -269,7 +269,11 @@ const Home = () => {
             </div>
             
             <div className="content-container">
-                <List items={items} />
+                {loading ? (
+                    <div className="loading">Loading...</div>
+                ) : (
+                    <List items={items} />
+                )}
             </div>
         </div>
     );
