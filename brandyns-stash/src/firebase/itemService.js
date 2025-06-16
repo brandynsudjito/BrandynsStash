@@ -15,9 +15,9 @@ const itemsCollection = collection(db, "figures");
 // Fetch all items with filtering and sorting
 // Update the getItems function in itemService.js
 // Update the getItems function in itemService.js
-export const getItems = async (searchTerm = "", searchType = "all", sortKey = "", sortDirection = "ascending", selectedSeries = null) => {
+export const getItems = async (searchTerm = "", sortKey = "", sortDirection = "ascending", selectedSeries = null) => {
   try {
-    console.log("Starting query with params:", { searchTerm, searchType, sortKey, sortDirection, selectedSeries });
+    console.log("Starting query with params:", { searchTerm, sortKey, sortDirection, selectedSeries });
     
     let items = [];
     
@@ -43,77 +43,18 @@ export const getItems = async (searchTerm = "", searchType = "all", sortKey = ""
         );
       }
     } else {
-      // Original logic when no specific series is selected
-      if (searchTerm) {
-        const searchTermLower = searchTerm.toLowerCase();
-        
-        if (searchType === "name") {
-          // Get all documents and filter client-side
-          const querySnapshot = await getDocs(itemsCollection);
-          items = querySnapshot.docs
-            .map(doc => ({
-              id: doc.id,
-              ...doc.data()
-            }))
-            .filter(item => 
-              item.name && item.name.toLowerCase().includes(searchTermLower)
-            );
-        } 
-        else if (searchType === "series") {
-          console.log("Searching by series:", searchTermLower);
-          
-          // Get all items and filter client-side
-          const allSnapshot = await getDocs(itemsCollection);
-          const allItems = allSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-          
-          items = allItems.filter(item => {
-            if (!item.series) return false;
-            
-            // Make sure series is treated as an array
-            const seriesArray = Array.isArray(item.series) ? item.series : [item.series];
-            
-            // Check if any series contains the search term
-            return seriesArray.some(series => 
-              series.toLowerCase().includes(searchTermLower)
-            );
-          });
-        }
-        else if (searchType === "all") {
-          // Get all items and filter client-side for both name and series
-          const allSnapshot = await getDocs(itemsCollection);
-          const allItems = allSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-          
-          items = allItems.filter(item => {
-            // Check name for partial match
-            if (item.name && item.name.toLowerCase().includes(searchTermLower)) {
-              return true;
-            }
-            
-            // Check series for partial match
-            if (item.series) {
-              const seriesArray = Array.isArray(item.series) ? item.series : [item.series];
-              return seriesArray.some(series => 
-                series.toLowerCase().includes(searchTermLower)
-              );
-            }
-            
-            return false;
-          });
-        }
-      } else {
-        // No search term, get all items
-        const querySnapshot = await getDocs(itemsCollection);
-        items = querySnapshot.docs.map(doc => ({
+      // No specific series selected
+      const searchTermLower = searchTerm.toLowerCase();
+      // Get all documents and filter client-side
+      const querySnapshot = await getDocs(itemsCollection);
+      items = querySnapshot.docs
+        .map(doc => ({
           id: doc.id,
           ...doc.data()
-        }));
-      }
+        }))
+        .filter(item => 
+          item.name && item.name.toLowerCase().includes(searchTermLower)
+        );
     }
     
     console.log(`Retrieved ${items.length} items before sorting`);

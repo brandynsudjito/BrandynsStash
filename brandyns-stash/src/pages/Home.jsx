@@ -43,7 +43,7 @@ const Home = () => {
             try {
                 const fetchedItems = await getItems(
                     inputText, 
-                    selectedSeries === "all" ? "all" : "series",
+                    // selectedSeries === "all" ? "all" : "series",
                     sortConfig.key, 
                     sortConfig.direction,
                     selectedSeries // Pass the selected series
@@ -260,7 +260,6 @@ const Home = () => {
                             >
                                 <MenuItem value=""><em>None</em></MenuItem>
                                 <MenuItem value="name">Name</MenuItem>
-                                <MenuItem value="series">Series</MenuItem>
                             </Select>
                         </FormControl>
 
