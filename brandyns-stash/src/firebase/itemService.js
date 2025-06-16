@@ -13,50 +13,54 @@ import { db } from "./firebaseConfig";
 const itemsCollection = collection(db, "figures");
 
 // Fetch all items with filtering and sorting
-export const getItems = async (searchTerm = "", searchType = "all", sortKey = "", sortDirection = "ascending") => {
+// Update the getItems function in itemService.js
+// Update the getItems function in itemService.js
+export const getItems = async (searchTerm = "", searchType = "all", sortKey = "", sortDirection = "ascending", selectedSeries = null) => {
   try {
-    console.log("Starting query with params:", { searchTerm, searchType, sortKey, sortDirection });
+    console.log("Starting query with params:", { searchTerm, searchType, sortKey, sortDirection, selectedSeries });
     
-    // Start with a base query
-    let q = query(itemsCollection);
     let items = [];
     
-    // Apply search filter if a search term is provided
-    if (searchTerm) {
-      const searchTermLower = searchTerm.toLowerCase();
-      
-      if (searchType === "name") {
-        // Use contains instead of range queries for name search
-        // Get all documents and filter client-side
-        const querySnapshot = await getDocs(itemsCollection);
-        items = querySnapshot.docs
-          .map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }))
-          .filter(item => 
-            item.name && item.name.toLowerCase().includes(searchTermLower)
-          );
-      } 
-      else if (searchType === "series") {
-        console.log("Searching by series:", searchTermLower);
-        
-        // For series search, we need a different approach since series is an array
-        // Option 1: If you have array-contains index
-        q = query(
-          itemsCollection,
-          where("seriesLower", "array-contains-any", [searchTermLower])
-        );
-        
-        const querySnapshot = await getDocs(q);
-        items = querySnapshot.docs.map(doc => ({
+    // If a specific series is selected, filter by that series first
+    if (selectedSeries && selectedSeries !== "all") {
+      const querySnapshot = await getDocs(itemsCollection);
+      items = querySnapshot.docs
+        .map(doc => ({
           id: doc.id,
           ...doc.data()
-        }));
+        }))
+        .filter(item => {
+          if (!item.series) return false;
+          const seriesArray = Array.isArray(item.series) ? item.series : [item.series];
+          return seriesArray.includes(selectedSeries);
+        });
+      
+      // If there's also a search term, filter further by name
+      if (searchTerm) {
+        const searchTermLower = searchTerm.toLowerCase();
+        items = items.filter(item => 
+          item.name && item.name.toLowerCase().includes(searchTermLower)
+        );
+      }
+    } else {
+      // Original logic when no specific series is selected
+      if (searchTerm) {
+        const searchTermLower = searchTerm.toLowerCase();
         
-        // If no results with exact match, try a more flexible client-side search
-        if (items.length === 0) {
-          console.log("No exact series matches, trying client-side filtering");
+        if (searchType === "name") {
+          // Get all documents and filter client-side
+          const querySnapshot = await getDocs(itemsCollection);
+          items = querySnapshot.docs
+            .map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }))
+            .filter(item => 
+              item.name && item.name.toLowerCase().includes(searchTermLower)
+            );
+        } 
+        else if (searchType === "series") {
+          console.log("Searching by series:", searchTermLower);
           
           // Get all items and filter client-side
           const allSnapshot = await getDocs(itemsCollection);
@@ -77,51 +81,15 @@ export const getItems = async (searchTerm = "", searchType = "all", sortKey = ""
             );
           });
         }
-      }
-      else if (searchType === "all") {
-        // For "all" search, we need to combine name and series searches
-        
-        // First, search by name
-        const nameQuery = query(
-          itemsCollection,
-          where("nameLower", ">=", searchTermLower),
-          where("nameLower", "<=", searchTermLower + "\uf8ff")
-        );
-        const nameSnapshot = await getDocs(nameQuery);
-        const nameResults = nameSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        
-        // Then, search by series
-        const seriesQuery = query(
-          itemsCollection,
-          where("seriesLower", "array-contains-any", [searchTermLower])
-        );
-        const seriesSnapshot = await getDocs(seriesQuery);
-        const seriesResults = seriesSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        
-        // Combine results, removing duplicates
-        const itemMap = new Map();
-        [...nameResults, ...seriesResults].forEach(item => {
-          itemMap.set(item.id, item);
-        });
-        items = Array.from(itemMap.values());
-        
-        // If few results, try client-side filtering for partial matches
-        if (items.length < 5) {
-          console.log("Few matches, trying client-side filtering");
-          
+        else if (searchType === "all") {
+          // Get all items and filter client-side for both name and series
           const allSnapshot = await getDocs(itemsCollection);
           const allItems = allSnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
           }));
           
-          const filteredItems = allItems.filter(item => {
+          items = allItems.filter(item => {
             // Check name for partial match
             if (item.name && item.name.toLowerCase().includes(searchTermLower)) {
               return true;
@@ -137,24 +105,15 @@ export const getItems = async (searchTerm = "", searchType = "all", sortKey = ""
             
             return false;
           });
-          
-          // Add new matches that weren't in the original results
-          filteredItems.forEach(item => {
-            if (!itemMap.has(item.id)) {
-              itemMap.set(item.id, item);
-            }
-          });
-          
-          items = Array.from(itemMap.values());
         }
+      } else {
+        // No search term, get all items
+        const querySnapshot = await getDocs(itemsCollection);
+        items = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
       }
-    } else {
-      // No search term, get all items
-      const querySnapshot = await getDocs(q);
-      items = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
     }
     
     console.log(`Retrieved ${items.length} items before sorting`);
@@ -163,8 +122,8 @@ export const getItems = async (searchTerm = "", searchType = "all", sortKey = ""
     if (sortKey && items.length > 0) {
       if (sortKey === "name") {
         items.sort((a, b) => {
-          const nameA = a.name.toLowerCase();
-          const nameB = b.name.toLowerCase();
+          const nameA = (a.name || "").toLowerCase();
+          const nameB = (b.name || "").toLowerCase();
           return sortDirection === "ascending" 
             ? nameA.localeCompare(nameB) 
             : nameB.localeCompare(nameA);
@@ -172,8 +131,8 @@ export const getItems = async (searchTerm = "", searchType = "all", sortKey = ""
       } else if (sortKey === "series") {
         items.sort((a, b) => {
           // Use seriesFirst if available, otherwise use first element of series array
-          const seriesA = a.seriesFirst || (Array.isArray(a.series) ? a.series[0] : a.series) || "";
-          const seriesB = b.seriesFirst || (Array.isArray(b.series) ? b.series[0] : b.series) || "";
+          const seriesA = (a.seriesFirst || (Array.isArray(a.series) ? a.series[0] : a.series) || "").toLowerCase();
+          const seriesB = (b.seriesFirst || (Array.isArray(b.series) ? b.series[0] : b.series) || "").toLowerCase();
           
           return sortDirection === "ascending" 
             ? seriesA.localeCompare(seriesB) 
@@ -205,5 +164,32 @@ export const getItemById = async (id) => {
   } catch (error) {
     console.error("Error fetching item:", error);
     return null;
+  }
+};
+
+// Add this function to itemService.js
+export const getAllSeries = async () => {
+  try {
+    const querySnapshot = await getDocs(itemsCollection);
+    const allSeries = new Set();
+    
+    querySnapshot.docs.forEach(doc => {
+      const data = doc.data();
+      if (data.series) {
+        // Handle both array and string series
+        const seriesArray = Array.isArray(data.series) ? data.series : [data.series];
+        seriesArray.forEach(series => {
+          if (series && series.trim()) {
+            allSeries.add(series.trim());
+          }
+        });
+      }
+    });
+    
+    // Convert to array and sort alphabetically
+    return Array.from(allSeries).sort((a, b) => a.localeCompare(b));
+  } catch (error) {
+    console.error("Error fetching series:", error);
+    return [];
   }
 };

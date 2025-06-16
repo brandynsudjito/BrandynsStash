@@ -4,29 +4,49 @@ import TextField from "@mui/material/TextField";
 import { Select, MenuItem, FormControl, InputLabel, IconButton, CircularProgress, Box } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import List from '@components/list';
-import { getItems } from '../firebase/itemService';
+import { getItems, getAllSeries } from '../firebase/itemService';
 
 const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [inputText, setInputText] = useState(searchParams.get('search') || "");
-    const [searchType, setSearchType] = useState(searchParams.get('type') || "all");
+    const [selectedSeries, setSelectedSeries] = useState(searchParams.get('series') || "all");
     const [sortConfig, setSortConfig] = useState({
         key: searchParams.get('sortKey') || "",
         direction: searchParams.get('sortDir') || 'ascending'
     });
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [seriesOptions, setSeriesOptions] = useState([]);
+    const [loadingSeries, setLoadingSeries] = useState(true);
 
-    // Fetch items when search or sort parameters change
+    // Fetch all series on component mount
+    useEffect(() => {
+        const fetchSeries = async () => {
+            setLoadingSeries(true);
+            try {
+                const series = await getAllSeries();
+                setSeriesOptions(series);
+            } catch (error) {
+                console.error("Error fetching series:", error);
+            } finally {
+                setLoadingSeries(false);
+            }
+        };
+        
+        fetchSeries();
+    }, []);
+
+    // Fetch items when search, series, or sort parameters change
     useEffect(() => {
         const fetchItems = async () => {
             setLoading(true);
             try {
                 const fetchedItems = await getItems(
                     inputText, 
-                    searchType, 
+                    selectedSeries === "all" ? "all" : "series",
                     sortConfig.key, 
-                    sortConfig.direction
+                    sortConfig.direction,
+                    selectedSeries // Pass the selected series
                 );
                 setItems(fetchedItems);
             } catch (error) {
@@ -37,7 +57,7 @@ const Home = () => {
         };
         
         fetchItems();
-    }, [inputText, searchType, sortConfig]);
+    }, [inputText, selectedSeries, sortConfig]);
 
     const requestSort = (key) => {
         let direction = 'ascending';
@@ -47,7 +67,7 @@ const Home = () => {
         setSortConfig({ key, direction });
         setSearchParams({ 
             search: inputText, 
-            type: searchType,
+            series: selectedSeries,
             sortKey: key,
             sortDir: direction
         });
@@ -57,7 +77,7 @@ const Home = () => {
         setSortConfig({ key: '', direction: 'ascending' });
         setSearchParams({ 
             search: inputText, 
-            type: searchType,
+            series: selectedSeries,
             sortKey: '',
             sortDir: 'ascending'
         });
@@ -68,18 +88,18 @@ const Home = () => {
         setInputText(lowerCase);
         setSearchParams({ 
             search: lowerCase, 
-            type: searchType,
+            series: selectedSeries,
             sortKey: sortConfig.key,
             sortDir: sortConfig.direction
         });
     };
 
-    const handleSearchTypeChange = (e) => {
-        const newSearchType = e.target.value;
-        setSearchType(newSearchType);
+    const handleSeriesChange = (e) => {
+        const newSeries = e.target.value;
+        setSelectedSeries(newSeries);
         setSearchParams({ 
             search: inputText, 
-            type: newSearchType,
+            series: newSeries,
             sortKey: sortConfig.key,
             sortDir: sortConfig.direction
         });
@@ -88,12 +108,12 @@ const Home = () => {
     // Update from URL parameters
     useEffect(() => {
         const searchParam = searchParams.get('search');
-        const typeParam = searchParams.get('type');
+        const seriesParam = searchParams.get('series');
         const sortKeyParam = searchParams.get('sortKey');
         const sortDirParam = searchParams.get('sortDir');
         
-        if (searchParam) setInputText(searchParam);
-        if (typeParam) setSearchType(typeParam);
+        if (searchParam !== null) setInputText(searchParam);
+        if (seriesParam) setSelectedSeries(seriesParam);
         if (sortKeyParam || sortDirParam) {
             setSortConfig({
                 key: sortKeyParam || '',
@@ -106,7 +126,7 @@ const Home = () => {
         setInputText("");
         setSearchParams({
             search: "",
-            type: searchType,
+            series: selectedSeries,
             sortKey: sortConfig.key,
             sortDir: sortConfig.direction
         });
@@ -135,6 +155,7 @@ const Home = () => {
                         value={inputText}
                         variant="outlined"
                         label="Search"
+                        placeholder={selectedSeries !== "all" ? `Search within ${selectedSeries}...` : "Search all items..."}
                         InputLabel={{ shrink: true }}
                         slotProps={{
                             input:{
@@ -177,11 +198,11 @@ const Home = () => {
                             justifyContent: 'center'
                         }}
                     >
-                        {/* Search Type Dropdown */}
+                        {/* Series Dropdown */}
                         <FormControl
                             variant="outlined"
                             sx={{
-                                minWidth: 150,
+                                minWidth: 200,
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': { borderColor: 'white' },
                                     '&:hover fieldset': { borderColor: 'white' },
@@ -193,15 +214,25 @@ const Home = () => {
                                 '& .MuiSelect-select': { color: 'white' }
                             }}
                         >
-                            <InputLabel>Search In</InputLabel>
+                            <InputLabel>Filter by Series</InputLabel>
                             <Select
-                                value={searchType}
-                                onChange={handleSearchTypeChange}
-                                label="Search In"
+                                value={selectedSeries}
+                                onChange={handleSeriesChange}
+                                label="Filter by Series"
+                                disabled={loadingSeries}
                             >
-                                <MenuItem value="all">All</MenuItem>
-                                <MenuItem value="name">Name</MenuItem>
-                                <MenuItem value="series">Series</MenuItem>
+                                <MenuItem value="all">All Series</MenuItem>
+                                {loadingSeries ? (
+                                    <MenuItem disabled>
+                                        <CircularProgress size={20} />
+                                    </MenuItem>
+                                ) : (
+                                    seriesOptions.map((series) => (
+                                        <MenuItem key={series} value={series}>
+                                            {series}
+                                        </MenuItem>
+                                    ))
+                                )}
                             </Select>
                         </FormControl>
                         
