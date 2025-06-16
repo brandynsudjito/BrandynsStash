@@ -14,7 +14,6 @@ const itemsCollection = collection(db, "figures");
 
 // Fetch all items with filtering and sorting
 // Update the getItems function in itemService.js
-// Update the getItems function in itemService.js
 export const getItems = async (searchTerm = "", sortKey = "", sortDirection = "ascending", selectedSeries = null) => {
   try {
     console.log("Starting query with params:", { searchTerm, sortKey, sortDirection, selectedSeries });
