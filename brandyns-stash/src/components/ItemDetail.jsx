@@ -102,11 +102,11 @@ const ItemDetail = () => {
                     
                     <div className="detail-section">
                         <h2></h2>
-                        <p>
-                            {item.seriesFirst}
-                        </p>
+                        <p>Series: {item.seriesFirst}</p>
+                        <p>Brand: {item.brand}</p>
+                        <p>Price: ${item.price}</p>
                     </div>
-
+                        
                     {item.description && (
                         <div className="detail-section">
                             <h2>Description</h2>
@@ -115,12 +115,12 @@ const ItemDetail = () => {
                     )}
 
                     {/* Add more details as needed */}
-                    {item.additionalInfo && (
+                    {/* {item.additionalInfo && (
                         <div className="detail-section">
                             <h2>Additional Information</h2>
                             <p>{item.additionalInfo}</p>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </div>
         </div>

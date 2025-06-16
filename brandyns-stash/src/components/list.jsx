@@ -33,9 +33,10 @@ function List({ items }) {
                             />
                             <div className="character-info">
                                 <p className="character-name">{item.name}</p>
-                                <p className="character-series">
-                                    {item.seriesFirst}
-                                </p>
+                                <p className="character-series">{item.seriesFirst}</p>
+                                <p className="character-brand">{item.brand}</p>
+                                {/* <p className="character-price">{item.price}</p> */}
+                                {/* <p className="character-description">{item.description}</p> */}
                             </div>
                         </div>
                     ))}
