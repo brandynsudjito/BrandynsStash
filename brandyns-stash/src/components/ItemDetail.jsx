@@ -103,6 +103,7 @@ const ItemDetail = () => {
                     <div className="detail-section">
                         <h2></h2>
                         <p>Series: {item.seriesFirst}</p>
+                        <p>Size class: {item.size}</p>
                         <p>Brand: {item.brand}</p>
                         <p>Price: ${item.price}</p>
                     </div>

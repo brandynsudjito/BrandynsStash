@@ -133,6 +133,12 @@ ul li {
     .character-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    .character-info{
+      padding:0px;
+    }
+    .character-image{
+      height: 250px; /* Adjust height for smaller screens */
+    }
 }
 
 @media (max-width: 600px) {
