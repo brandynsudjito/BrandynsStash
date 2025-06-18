@@ -12,4 +12,11 @@ export default defineConfig({
     },
     outDir: 'dist',
   },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      // Add other aliases as needed
+    }
+  }
 })
