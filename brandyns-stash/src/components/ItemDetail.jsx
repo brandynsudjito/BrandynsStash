@@ -102,7 +102,7 @@ const ItemDetail = () => {
                     
                     <div className="detail-section">
                         <h2></h2>
-                        <p>Series: {item.seriesFirst}</p>
+                        <p>Series: {item.series}</p>
                         <p>Size class: {item.size}</p>
                         <p>Brand: {item.brand}</p>
                         <p>Price: ${item.price}</p>

@@ -70,9 +70,9 @@ export const getItems = async (searchTerm = "", sortKey = "", sortDirection = "a
         });
       } else if (sortKey === "series") {
         items.sort((a, b) => {
-          // Use seriesFirst if available, otherwise use first element of series array
-          const seriesA = (a.seriesFirst || (Array.isArray(a.series) ? a.series[0] : a.series) || "").toLowerCase();
-          const seriesB = (b.seriesFirst || (Array.isArray(b.series) ? b.series[0] : b.series) || "").toLowerCase();
+          // Use series if available, otherwise use first element of series array
+          const seriesA = ((Array.isArray(a.series) ? a.series[0] : a.series) || "").toLowerCase();
+          const seriesB = ((Array.isArray(b.series) ? b.series[0] : b.series) || "").toLowerCase();
           
           return sortDirection === "ascending" 
             ? seriesA.localeCompare(seriesB) 
