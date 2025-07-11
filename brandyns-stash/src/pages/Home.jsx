@@ -11,7 +11,7 @@ const Home = () => {
     const [inputText, setInputText] = useState(searchParams.get('search') || "");
     const [selectedSeries, setSelectedSeries] = useState(searchParams.get('series') || "all");
     const [sortConfig, setSortConfig] = useState({
-        key: searchParams.get('sortKey') || "",
+        key: searchParams.get('sortKey') || "name",
         direction: searchParams.get('sortDir') || 'ascending'
     });
     const [items, setItems] = useState([]);
@@ -74,11 +74,11 @@ const Home = () => {
     };
 
     const resetSort = () => {
-        setSortConfig({ key: '', direction: 'ascending' });
+        setSortConfig({ key: 'name', direction: 'ascending' });
         setSearchParams({ 
             search: inputText, 
             series: selectedSeries,
-            sortKey: '',
+            sortKey: 'name',
             sortDir: 'ascending'
         });
     };
@@ -114,12 +114,12 @@ const Home = () => {
         
         if (searchParam !== null) setInputText(searchParam);
         if (seriesParam) setSelectedSeries(seriesParam);
-        if (sortKeyParam || sortDirParam) {
+        // if (sortKeyParam || sortDirParam) {
             setSortConfig({
-                key: sortKeyParam || '',
+                key: sortKeyParam || 'name',
                 direction: sortDirParam || 'ascending'
             });
-        }
+        // }
     }, [searchParams]);
 
     const handleClear = () => {
@@ -130,6 +130,26 @@ const Home = () => {
             sortKey: sortConfig.key,
             sortDir: sortConfig.direction
         });
+    };
+
+    // Save scroll position before navigating away
+    const saveScrollPosition = () => {
+        sessionStorage.setItem('homeScrollPosition', window.scrollY);
+    };
+
+    // Restore scroll position when returning
+    useEffect(() => {
+        const savedPosition = sessionStorage.getItem('homeScrollPosition');
+        if (savedPosition) {
+            window.scrollTo(0, parseInt(savedPosition));
+            // Optional: Clear the saved position after restoring
+            // sessionStorage.removeItem('homeScrollPosition');
+        }
+    }, []); // Run once on mount
+
+    // Add click handler to list items
+    const handleItemClick = () => {
+        saveScrollPosition();
     };
 
     return (
@@ -258,8 +278,8 @@ const Home = () => {
                                 onChange={(e) => requestSort(e.target.value)}
                                 label="Sort By"
                             >
-                                <MenuItem value=""><em>None</em></MenuItem>
                                 <MenuItem value="name">Name</MenuItem>
+                                <MenuItem value="series">Series</MenuItem>
                             </Select>
                         </FormControl>
 
@@ -302,7 +322,7 @@ const Home = () => {
                 {loading ? (
                     <div className="loading">Loading...</div>
                 ) : (
-                    <List items={items} />
+                    <List items={items} onItemClick={handleItemClick}/>
                 )}
             </div>
         </div>
@@ -310,8 +330,3 @@ const Home = () => {
 };
 
 export default Home;
-
-//comment
-//another comment
-// one more comment
-//one more
