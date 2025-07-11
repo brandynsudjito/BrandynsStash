@@ -132,26 +132,44 @@ const Home = () => {
         });
     };
 
-    // Save scroll position before navigating away
+
     const saveScrollPosition = () => {
-        sessionStorage.setItem('homeScrollPosition', window.scrollY);
+        const currentPosition = window.scrollY;
+        sessionStorage.setItem('homeScrollPosition', currentPosition);
     };
 
     // Restore scroll position when returning
+    // useEffect(() => {
+    //     // Small delay to ensure content is loaded
+    //     const restorePosition = () => {
+    //         const savedPosition = sessionStorage.getItem('homeScrollPosition');
+            
+    //         if (savedPosition) {
+    //             const position = parseInt(savedPosition);
+    //             window.scrollTo(0, position);
+    //         }
+    //     };
+
+    //     // restorePosition();
+        
+
+    //     const timer = setTimeout(restorePosition, 100);
+        
+    //     return () => clearTimeout(timer);
+    // }, []); 
+
+    // Also restore when items finish loading
     useEffect(() => {
-        const savedPosition = sessionStorage.getItem('homeScrollPosition');
-        if (savedPosition) {
-            window.scrollTo(0, parseInt(savedPosition));
-            // Optional: Clear the saved position after restoring
-            // sessionStorage.removeItem('homeScrollPosition');
+        if (!loading && items.length > 0) {
+            const savedPosition = sessionStorage.getItem('homeScrollPosition');
+            if (savedPosition) {
+                console.log('Restoring position after items loaded:', savedPosition);
+                setTimeout(() => {
+                    window.scrollTo(0, parseInt(savedPosition));
+                }, 50);
+            }
         }
-    }, []); // Run once on mount
-
-    // Add click handler to list items
-    const handleItemClick = () => {
-        saveScrollPosition();
-    };
-
+    }, [loading, items]);
     return (
         <div className="home">
             <div className="header-container">
@@ -322,7 +340,7 @@ const Home = () => {
                 {loading ? (
                     <div className="loading">Loading...</div>
                 ) : (
-                    <List items={items} onItemClick={handleItemClick}/>
+                    <List items={items} onItemClick={saveScrollPosition}/>
                 )}
             </div>
         </div>

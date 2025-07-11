@@ -1,8 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function List({ items }) {
+function List({ items, onItemClick }) {
     const navigate = useNavigate();
+
+    const handleItemClick = (itemId) => {
+        // Call the parent's onItemClick if provided
+        if (onItemClick) {
+            onItemClick();
+        }
+        // Navigate to the item detail page
+        navigate(`/item/${itemId}`);
+
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+        }, 0);
+    };
 
     return (
         <div>
@@ -20,7 +33,7 @@ function List({ items }) {
                         <div 
                             key={item.id} 
                             className="character-grid-item"
-                            onClick={() => navigate(`/item/${item.id}`)}
+                            onClick={() => handleItemClick(item.id)}
                             style={{ cursor: 'pointer' }}>
                             <img 
                                 src={item.image} 
