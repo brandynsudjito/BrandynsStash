@@ -188,7 +188,15 @@ const Home = () => {
     }, [loading, items]);
     return (
         <div className="home">
-            <div className="header-container">
+            <div className="header-container" style={{
+                    position: 'fixed',
+                    top: 0,
+                    width: '100%',
+                    zIndex: 1000,
+                    backgroundColor: '#242424', // Match your app's background color
+                    paddingBottom: '10px 0',
+                    borderBottom: '1px solid rgba(255,255,255,0.1)' // Optional divider
+                }}>
                 <h1>Brandyn's Stash</h1>
                 
                 {/* Main container for search and filters */}
@@ -198,6 +206,8 @@ const Home = () => {
                         flexDirection: 'column',
                         gap: '10px',
                         width: '100%',
+                        padding: '0 20px',
+                        boxSizing: 'border-box',
                         maxWidth: '1000px',
                         margin: '0 auto'
                     }}
@@ -351,7 +361,10 @@ const Home = () => {
                     </Box>
                 </Box>
             </div>
-            
+            <div style={{ 
+                height: '150px', // Adjust this to match your header's height 
+                marginBottom: '24px'
+            }}></div>
             <div className="content-container">
                 {loading ? (
                     <div className="loading">Loading...</div>
