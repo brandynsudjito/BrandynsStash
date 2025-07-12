@@ -20,7 +20,7 @@ const Home = () => {
     const [seriesOptions, setSeriesOptions] = useState([]);
     const [loadingSeries, setLoadingSeries] = useState(true);
     const [debouncedInputText, setDebouncedInputText] = useState(inputText);
-    const [menuExpanded, setMenuExpanded] = useState(false); // Start collapsed by default
+    const [menuExpanded, setMenuExpanded] = useState(true); // Start open by default
 
     // Determine if any filters are active for indicator
     const filtersActive = inputText || selectedSeries !== "all" || sortConfig.key !== "name" || sortConfig.direction !== "ascending";
