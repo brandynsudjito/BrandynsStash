@@ -29,6 +29,7 @@ export const getItems = async (searchTerm = "", sortKey = "", sortDirection = "a
           ...doc.data()
         }))
         .filter(item => {
+          if (item.isSold === true) return false; // Exclude sold items
           if (!item.series) return false;
           const seriesArray = Array.isArray(item.series) ? item.series : [item.series];
           return seriesArray.includes(selectedSeries);
@@ -52,6 +53,7 @@ export const getItems = async (searchTerm = "", sortKey = "", sortDirection = "a
           ...doc.data()
         }))
         .filter(item => 
+          item.isSold !== true && // Exclude sold items
           item.name && item.name.toLowerCase().includes(searchTermLower)
         );
     }
@@ -115,6 +117,8 @@ export const getAllSeries = async () => {
     
     querySnapshot.docs.forEach(doc => {
       const data = doc.data();
+      if(data.isSold === true) return; // Skip sold items
+      
       if (data.series) {
         // Handle both array and string series
         const seriesArray = Array.isArray(data.series) ? data.series : [data.series];
