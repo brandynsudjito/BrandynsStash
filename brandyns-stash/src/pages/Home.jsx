@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import TextField from "@mui/material/TextField";
 import { Select, MenuItem, FormControl, InputLabel, IconButton, CircularProgress, Box } from '@mui/material';
@@ -18,6 +18,15 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [seriesOptions, setSeriesOptions] = useState([]);
     const [loadingSeries, setLoadingSeries] = useState(true);
+    const [debouncedInputText, setDebouncedInputText] = useState(inputText);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedInputText(inputText);
+        }, 500); // 500ms delay
+
+        return () => clearTimeout(timer);
+    }, [inputText]);
 
     // Fetch all series on component mount
     useEffect(() => {
@@ -42,7 +51,7 @@ const Home = () => {
             setLoading(true);
             try {
                 const fetchedItems = await getItems(
-                    inputText, 
+                    debouncedInputText, 
                     // selectedSeries === "all" ? "all" : "series",
                     sortConfig.key, 
                     sortConfig.direction,
@@ -57,7 +66,7 @@ const Home = () => {
         };
         
         fetchItems();
-    }, [inputText, selectedSeries, sortConfig]);
+    }, [debouncedInputText, selectedSeries, sortConfig]);
 
     const requestSort = (key) => {
         let direction = 'ascending';
@@ -83,15 +92,20 @@ const Home = () => {
         });
     };
 
-    let inputHandler = (e) => {
-        const lowerCase = e.target.value.toLowerCase();
-        setInputText(lowerCase);
+    // Update URL parameters when debounced search changes
+    useEffect(() => {
         setSearchParams({ 
-            search: lowerCase, 
+            search: debouncedInputText, 
             series: selectedSeries,
             sortKey: sortConfig.key,
             sortDir: sortConfig.direction
         });
+    }, [debouncedInputText, setSearchParams, selectedSeries, sortConfig]);
+
+    let inputHandler = (e) => {
+        const lowerCase = e.target.value.toLowerCase();
+        setInputText(lowerCase);
+        // Removed setSearchParams - this will be handled by the effect
     };
 
     const handleSeriesChange = (e) => {
@@ -139,24 +153,26 @@ const Home = () => {
     };
 
     // Restore scroll position when returning
-    // useEffect(() => {
-    //     // Small delay to ensure content is loaded
-    //     const restorePosition = () => {
-    //         const savedPosition = sessionStorage.getItem('homeScrollPosition');
+    useEffect(() => {
+        // Small delay to ensure content is loaded
+        const restorePosition = () => {
+            const savedPosition = sessionStorage.getItem('homeScrollPosition');
             
-    //         if (savedPosition) {
-    //             const position = parseInt(savedPosition);
-    //             window.scrollTo(0, position);
-    //         }
-    //     };
+            if (savedPosition) {
+                const position = parseInt(savedPosition);
+                window.scrollTo(0, position);
 
-    //     // restorePosition();
+                sessionStorage.removeItem('homeScrollPosition');
+            }
+        };
+
+        // restorePosition();
         
 
-    //     const timer = setTimeout(restorePosition, 100);
+        const timer = setTimeout(restorePosition, 100);
         
-    //     return () => clearTimeout(timer);
-    // }, []); 
+        return () => clearTimeout(timer);
+    }, []); 
 
     // Also restore when items finish loading
     useEffect(() => {
